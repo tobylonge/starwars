@@ -14,9 +14,13 @@ class DropdownComponent extends Component {
         this.setState({isOpen: true});
     }
 
+    viewDetails = movie => {
+        //close dropdown Modal
+        this.setState({isOpen: false, defaultText: `${movie.title} (${moment(movie.release_date).format("YYYY")})`});
+        this.props.viewDetails(movie);
+    }
+
     componentDidMount = () => {
-        console.log('data for dropdown ', this.props.data);
-        // const sortedData  = this.props.data.sort((a,b) => moment(a.release_date).format('YYYY-MM-DD') - moment(b.release_date).format('YYYY-MM-DD'))
 
         this.props.data.sort(function (left, right) {
             return moment.utc(left.release_date).diff(moment.utc(right.release_date))
@@ -33,7 +37,7 @@ class DropdownComponent extends Component {
                  <ul className={`dropdown-menu ${this.state.isOpen ? 'open' : ''}`}>
                      <a className="close" onClick={() => this.setState({isOpen: false})}>×</a>
                      {this.props.data.map((starwars, key) => (
-                        <li key={key}><a href="#">{starwars.title} ({moment(starwars.release_date).format("YYYY")})</a></li>
+                        <li key={key}><a href="#" onClick={() => this.viewDetails(starwars)}>{starwars.title} ({moment(starwars.release_date).format("YYYY")})</a></li>
                      ))}
                 </ul>
             </div>

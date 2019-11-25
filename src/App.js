@@ -4,6 +4,8 @@ import localForage from "localforage";
 import logo from "./logo.svg";
 import Loader from "./Utils/Loader";
 import Dropdown from "./Components/DropdownComponent";
+import TableComponent from "./Components/TableComponent";
+import CrawlComponent from "./Components/CrawlComponent";
 
 class StarWarsBackGround extends Component {
   constructor(props) {
@@ -11,7 +13,9 @@ class StarWarsBackGround extends Component {
 
     this.state = {
       starwars: [],
-      isloading: false
+      isloading: false,
+      isDetails: false,
+      movieDetails: []
     };
   }
 
@@ -26,7 +30,7 @@ class StarWarsBackGround extends Component {
             //Save to local storage so it loads faster on future loads
             localForage.setItem("starwars", this.state.starwars).catch(err => {
               console.log(err);
-           });
+            });
             this.setState({ isloading: false });
           });
         }
@@ -34,6 +38,12 @@ class StarWarsBackGround extends Component {
       .catch(error => {
         console.log(error);
       });
+  };
+
+  viewDetails = movie => {
+    //close dropdown Modal
+    this.setState({ isDetails: true, movieDetails: movie });
+    console.log("movie ", movie);
   };
 
   componentDidMount = () => {
@@ -60,8 +70,15 @@ class StarWarsBackGround extends Component {
             <Loader />
           ) : (
             <React.Fragment>
-              <Dropdown data = {this.state.starwars}/>
-              <img src="logo.svg" className="App-logo" alt="logo" />
+              <Dropdown data={this.state.starwars} viewDetails={movie => this.viewDetails(movie)} />
+              {!this.state.isDetails ? (
+                <img src="logo.svg" className="App-logo" alt="logo" />
+              ) : (
+                <React.Fragment>
+                  <CrawlComponent movieDetails={this.state.movieDetails} />
+                  <TableComponent movieDetails={this.state.movieDetails}></TableComponent>
+                </React.Fragment>
+              )}
             </React.Fragment>
           )}
         </header>
