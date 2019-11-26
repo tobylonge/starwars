@@ -29,8 +29,8 @@ class tableComponent extends Component {
 
     axios.all(list)
     .then(axios.spread((...responses) => {
-        this.sortAscending(responses);
         this.setState({ characters: responses, backupCharacters: responses}, () => {
+          this.sortCharacters();
           this.setState({isloading: false});
             this.sumofHeight();
         });
@@ -41,27 +41,30 @@ class tableComponent extends Component {
   };
 
   sortAscending = data => {
+    console.log('I am ascending');
     data.sort((a,b) => (a.data.name > b.data.name) ? 1 : ((b.data.name > a.data.name) ? -1 : 0));
+    this.setState({sortUp: !this.state.sortUp});
   }
 
   sortDecending = data => {
+    console.log('I got to decending');
     data.sort((a,b) => (a.data.name > b.data.name) ? -1 : ((b.data.name > a.data.name) ? 1 : 0));
+    this.setState({sortUp: !this.state.sortUp});
   }
 
   sortCharacters = () => {
-      this.setState({sortUp: !this.state.sortUp}, () => {
-          if(this.state.sortUp) {
-              this.sortAscending(this.state.characters);
-          }
-          else {
-              this.sortDecending(this.state.characters)
-          }
-      });
+    if(this.state.sortUp) {
+        this.sortAscending(this.state.characters);
+    }
+    else {
+        this.sortDecending(this.state.characters)
+    }
   }
 
 
   // handle Gender select change and fi
   handleGenderChange = (e) => {
+
     this.setState({isloading: true});
     const value = e.target.value;
     this.setState({gender: value}, () => {
@@ -127,7 +130,7 @@ class tableComponent extends Component {
           <thead>
             <tr onClick={this.sortCharacters}>
               <th>
-                <h1>Name</h1>
+                <h1>Name <i className={`icon ${this.state.sortUp ? 'up' : 'down'}`}></i></h1>
               </th>
               <th>
                 <h1>Gender</h1>
@@ -144,7 +147,7 @@ class tableComponent extends Component {
               <React.Fragment>
               {this.state.characters.map((character, key) => (
                 <tr key={key}>
-                  <td>{character.data.name}</td>
+                  <td>{character.data.name} </td>
                   <td>{character.data.gender}</td>
                   <td>{character.data.height}{isNaN(character.data.height) ? '' : 'cm'}</td>
                 </tr>
