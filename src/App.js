@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
 import localForage from "localforage";
-import logo from "./logo.svg";
 import Loader from "./Utils/Loader";
 import Dropdown from "./Components/DropdownComponent";
+import TableComponent from "./Components/TableComponent";
+import CrawlComponent from "./Components/CrawlComponent";
 
 class StarWarsBackGround extends Component {
   constructor(props) {
@@ -11,7 +12,10 @@ class StarWarsBackGround extends Component {
 
     this.state = {
       starwars: [],
-      isloading: false
+      isloading: false,
+      isDetails: false,
+      movieDetails: [],
+      isErrorMsg: false
     };
   }
 
@@ -26,14 +30,21 @@ class StarWarsBackGround extends Component {
             //Save to local storage so it loads faster on future loads
             localForage.setItem("starwars", this.state.starwars).catch(err => {
               console.log(err);
-           });
-            this.setState({ isloading: false });
+            });
+            this.setState({ isloading: false, isErrorMsg: false });
           });
         }
       })
       .catch(error => {
         console.log(error);
+        this.setState({ isloading: false, isErrorMsg: true });
       });
+  };
+
+  viewDetails = movie => {
+    //close dropdown Modal
+    this.setState({ isDetails: true, movieDetails: movie });
+    console.log("movie ", movie);
   };
 
   componentDidMount = () => {
@@ -54,17 +65,29 @@ class StarWarsBackGround extends Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
+      <div className="app">
+        <div className="app-wrapper">
           {this.state.isloading ? (
             <Loader />
           ) : (
-            <React.Fragment>
-              <Dropdown data = {this.state.starwars}/>
-              <img src="logo.svg" className="App-logo" alt="logo" />
-            </React.Fragment>
+            !this.state.isErrorMsg ?
+            <div className="container">
+              <Dropdown data={this.state.starwars} viewDetails={movie => this.viewDetails(movie)} />
+              {!this.state.isDetails ? (
+                <img src="logo.svg" className="app-logo" alt="logo" />
+              ) : (
+                <React.Fragment>
+                  <CrawlComponent movieDetails={this.state.movieDetails} />
+                  <TableComponent movieDetails={this.state.movieDetails}></TableComponent>
+                </React.Fragment>
+              )}
+            </div>
+            :
+            <div className="container">
+              <p>We apologize for any inconvience but an unexpected error occurred while you were browsing our site. Please click on the reload button to try again</p>
+            </div>
           )}
-        </header>
+        </div>
       </div>
     );
   }
