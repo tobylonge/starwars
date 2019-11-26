@@ -133,7 +133,7 @@ class tableComponent extends Component {
                 <h1>Name <i className={`icon ${this.state.sortUp ? 'up' : 'down'}`}></i></h1>
               </th>
               <th>
-                <h1>Gender</h1>
+                <h1>Sex</h1>
               </th>
               <th>
                 <h1>Height</h1>
@@ -148,7 +148,7 @@ class tableComponent extends Component {
               {this.state.characters.map((character, key) => (
                 <tr key={key}>
                   <td>{character.data.name} </td>
-                  <td>{character.data.gender}</td>
+                  <td>{window.screen.width > 768 ? character.data.gender : character.data.gender.charAt(0)}</td>
                   <td>{character.data.height}{isNaN(character.data.height) ? '' : 'cm'}</td>
                 </tr>
               ))}
