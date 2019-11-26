@@ -27,8 +27,27 @@ marquee {
         font-weight: bold;
         font-size: 0.8em;
         text-align: left;
-        color: #185875;
+        color: #2c90bd;
         margin-bottom: 0;
+        position: relative;
+        margin-right: 5px;
+
+        .icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            opacity: 0.6;
+            &.down {
+                border-top: 10px solid #dddddd;
+            }
+            &.up {
+                border-bottom: 10px solid #dddddd;
+            }
+        }
     }
 
     td {
@@ -64,6 +83,9 @@ marquee {
     
     th {
         background-color: #1F2739;
+        cursor: pointer;
+
+        
     }
     
     td:hover {
