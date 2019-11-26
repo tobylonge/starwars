@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import moment from "moment";
 
 class CrawlComponent extends Component {
     constructor(props) {
@@ -15,7 +14,7 @@ class CrawlComponent extends Component {
     
     render() {
         return (
-             <div className="container">
+             <div className="crawl-container">
                  {this.props.movieDetails &&
                     <marquee>{this.props.movieDetails.opening_crawl}</marquee>
                  }

@@ -11,28 +11,31 @@ marquee {
     padding: 15px;
 }
 
+.table-wrapper {
+    display: flex;
+    flex-direction: column;
+}
 
-.container {
+.container-table {
     text-align: left;
     overflow: hidden;
-    width: 80%;
     margin: 0 auto;
     display: table;
-    padding: 0 0 8em 0;
+    width: 100%;
 
     th h1 {
         font-weight: bold;
-        font-size: 1em;
+        font-size: 0.8em;
         text-align: left;
         color: #185875;
+        margin-bottom: 0;
     }
 
     td {
         font-weight: normal;
-        font-size: 1em;
-        -webkit-box-shadow: 0 2px 2px -2px #0E1119;
-        -moz-box-shadow: 0 2px 2px -2px #0E1119;
+        font-size: 0.8em;
         box-shadow: 0 2px 2px -2px #0E1119;
+        text-transform: capitalize;
     }
 
     td,
@@ -56,9 +59,7 @@ marquee {
 
     tr:hover {
         background-color: #464A52;
-        -webkit-box-shadow: 0 6px 6px -6px #0E1119;
-        -moz-box-shadow: 0 6px 6px -6px #0E1119;
-        box-shadow: 0 6px 6px -6px #0E1119;
+        box-shadow: 0 3px 3px -3px #0E1119;
     }
     
     th {
@@ -66,12 +67,12 @@ marquee {
     }
     
     td:hover {
-        background-color: #FFF842;
+        background-color: #ffe300;
         color: #403E10;
         font-weight: bold;
     
         box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
-        transform: translate3d(6px, -6px, 0);
+        transform: translate3d(3px, -3px, 0);
     
         transition-delay: 0s;
         transition-duration: 0.4s;
@@ -79,6 +80,48 @@ marquee {
         transition-timing-function: line;
     }
 }
+
+.select-box {
+    width: 230px;
+    overflow: hidden;
+    text-align: left;
+    background-color: rgba(32, 128, 187, 0.3);
+    position: relative;
+    align-self: flex-end;
+    margin-bottom: 15px;
+    
+    &::after {
+      content: '';
+      display: inline-block;
+      border-top:   solid 7px #FFF;
+      border-right: solid 4px transparent;
+      border-left:  solid 4px transparent;
+      pointer-events: none;
+      
+      position: absolute;
+      top: 18px; right: 13px;
+    }
+  }
+  
+  .select {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 0;
+    box-sizing: border-box;
+    font-size: 18px;
+    color: #FFF;
+    background-color: transparent;
+    
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    
+    &:focus {
+      outline: none;
+    }
+  }
 
 
 @media (max-width: 800px) {
