@@ -15,7 +15,8 @@ class tableComponent extends Component {
       gender: '',
       heightSum: 0,
       isloading: true,
-      errorMsg: false
+      errorMsg: false,
+      genders: []
     };
   }
 
@@ -31,6 +32,7 @@ class tableComponent extends Component {
     .then(axios.spread((...responses) => {
         this.setState({ characters: responses, backupCharacters: responses}, () => {
           this.sortCharacters();
+          this.getGenders(this.state.characters);
           this.setState({isloading: false});
             this.sumofHeight();
         });
@@ -39,6 +41,17 @@ class tableComponent extends Component {
         this.setState({errorMsg: true});
       });
   };
+
+  getGenders = (characters) => {
+    let genders = [];
+    characters.forEach(character => {
+      if(genders.indexOf(character.data.gender) === -1) {
+        genders.push(character.data.gender);
+      }
+    });
+
+    this.setState({genders})
+  }
 
   sortAscending = data => {
     console.log('I am ascending');
@@ -121,9 +134,10 @@ class tableComponent extends Component {
           <div className="select-box">
             <select className="select" onChange={e => this.handleGenderChange(e)} value={this.state.gender}>
               <option>All</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="hermaphrodite">Hermaphrodite</option>
+              {this.state.genders &&
+              this.state.genders.map(gender => (
+                <option value={gender}>{gender}</option>
+              ))}
             </select>
           </div>
           <table className="container-table">
