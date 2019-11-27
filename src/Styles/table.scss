@@ -1,6 +1,4 @@
-.blue {
-    color: #185875;
-}
+
 
 .yellow {
     color: #FFF842;
@@ -31,7 +29,7 @@ marquee {
         font-weight: bold;
         font-size: 0.8em;
         text-align: left;
-        color: #2c90bd;
+        color: #adab7c;
         margin-bottom: 0;
         position: relative;
         margin-right: 5px;
@@ -79,15 +77,15 @@ marquee {
     }
 
     tr:nth-child(odd) {
-        background-color: #323C50;
+        background-color: #1c1e21;
     }
 
     tr:nth-child(even) {
-        background-color: #2C3446;
+        background-color: #2b2d31;
     }
 
     td:first-child {
-        color: #FB667A;
+        color: #ffe300;
     }
 
     tr:hover {
@@ -96,7 +94,7 @@ marquee {
     }
     
     th {
-        background-color: #1F2739;
+        background-color: #111317;
         cursor: pointer;
 
         
@@ -121,7 +119,7 @@ marquee {
     width: 230px;
     overflow: hidden;
     text-align: left;
-    background-color: rgba(32, 128, 187, 0.3);
+    background-color: rgba(160, 169, 175, 0.3);
     position: relative;
     align-self: flex-end;
     margin-bottom: 15px;
