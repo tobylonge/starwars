@@ -146,8 +146,8 @@ class tableComponent extends Component {
             <select className="select" onChange={e => this.handleGenderChange(e)} value={this.state.gender}>
               <option>All</option>
               {this.state.genders &&
-              this.state.genders.map(gender => (
-                <option value={gender}>{gender}</option>
+              this.state.genders.map((gender,key) => (
+                <option value={gender} key={key}>{gender}</option>
               ))}
             </select>
           </div>
