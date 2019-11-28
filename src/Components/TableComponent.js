@@ -11,11 +11,14 @@ class tableComponent extends Component {
       backupCharacters: [],
       isloading: true,
       movieDetails: [],
-      sortUp: true,
+      nameUp: true,
+      genderUp: true,
+      heightUp: true,
       gender: '',
       heightSum: 0,
       isloading: true,
-      errorMsg: false
+      errorMsg: false,
+      genders: []
     };
   }
 
@@ -30,7 +33,8 @@ class tableComponent extends Component {
     axios.all(list)
     .then(axios.spread((...responses) => {
         this.setState({ characters: responses, backupCharacters: responses}, () => {
-          this.sortCharacters();
+          this.sortCharacters('nameUp', 'name');
+          this.getGenders(this.state.characters);
           this.setState({isloading: false});
             this.sumofHeight();
         });
@@ -40,24 +44,44 @@ class tableComponent extends Component {
       });
   };
 
-  sortAscending = data => {
-    console.log('I am ascending');
-    data.sort((a,b) => (a.data.name > b.data.name) ? 1 : ((b.data.name > a.data.name) ? -1 : 0));
-    this.setState({sortUp: !this.state.sortUp});
+  getGenders = (characters) => {
+    let genders = [];
+    characters.forEach(character => {
+      if(genders.indexOf(character.data.gender) === -1) {
+        genders.push(character.data.gender);
+      }
+    });
+
+    this.setState({genders})
   }
 
-  sortDecending = data => {
-    console.log('I got to decending');
-    data.sort((a,b) => (a.data.name > b.data.name) ? -1 : ((b.data.name > a.data.name) ? 1 : 0));
-    this.setState({sortUp: !this.state.sortUp});
-  }
-
-  sortCharacters = () => {
-    if(this.state.sortUp) {
-        this.sortAscending(this.state.characters);
+  sortAscending = (data, term, element) => {
+    if(element === 'height') {
+      data.sort((a,b) => (a.data[element] - b.data[element]));
     }
     else {
-        this.sortDecending(this.state.characters)
+      data.sort((a,b) => (a.data[element] > b.data[element]) ? 1 : ((b.data[element] > a.data[element]) ? -1 : 0));
+    }
+
+    this.setState({[term]: !this.state[term]});
+  }
+
+  sortDecending = (data, term, element) => {
+    if(element === 'height') {
+      data.sort((a,b) => (b.data[element] - a.data[element]));
+    }
+    else {
+      data.sort((a,b) => (a.data[element] > b.data[element]) ? -1 : ((b.data[element] > a.data[element]) ? 1 : 0));
+    }
+    this.setState({[term]: !this.state[term]});
+  }
+
+  sortCharacters = (term, element) => {
+    if(this.state[term]) {
+        this.sortAscending(this.state.characters, term, element);
+    }
+    else {
+        this.sortDecending(this.state.characters, term, element)
     }
   }
 
@@ -121,22 +145,23 @@ class tableComponent extends Component {
           <div className="select-box">
             <select className="select" onChange={e => this.handleGenderChange(e)} value={this.state.gender}>
               <option>All</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="hermaphrodite">Hermaphrodite</option>
+              {this.state.genders &&
+              this.state.genders.map(gender => (
+                <option value={gender}>{gender}</option>
+              ))}
             </select>
           </div>
           <table className="container-table">
           <thead>
-            <tr onClick={this.sortCharacters}>
-              <th>
-                <h1>Name <i className={`icon ${this.state.sortUp ? 'up' : 'down'}`}></i></h1>
+            <tr>
+              <th onClick={() => this.sortCharacters('nameUp', 'name')}>
+                <h1>Name <i className={`icon ${this.state.nameUp ? 'up' : 'down'}`}></i></h1>
               </th>
-              <th>
-                <h1>Sex</h1>
+              <th onClick={() => this.sortCharacters('genderUp', 'gender')}>
+                <h1>Gender  <i className={`icon ${this.state.genderUp ? 'up' : 'down'}`}></i></h1>
               </th>
-              <th>
-                <h1>Height</h1>
+              <th onClick={() => this.sortCharacters('heightUp', 'height')}>
+                <h1>Height <i className={`icon ${this.state.heightUp ? 'up' : 'down'}`}></i></h1>
               </th>
             </tr>
           </thead>
