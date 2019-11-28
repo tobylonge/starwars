@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import moment from "moment";
+import {_getYear} from '../Utils/helpers';
 
 class DropdownComponent extends Component {
     constructor(props) {
@@ -16,14 +16,15 @@ class DropdownComponent extends Component {
 
     viewDetails = movie => {
         //close dropdown Modal
-        this.setState({isOpen: false, defaultText: `${movie.title} (${moment(movie.release_date).format("YYYY")})`});
+        console.log('date ', _getYear(movie.release_date));
+        this.setState({isOpen: false, defaultText: `${movie.title} (${_getYear(movie.release_date)})`});
         this.props.viewDetails(movie);
     }
 
     componentDidMount = () => {
 
         this.props.data.sort(function (left, right) {
-            return moment.utc(left.release_date).diff(moment.utc(right.release_date))
+            return _getYear(left.release_date) - _getYear(right.release_date)
         });
 
         // console.log('sort ', sortedData)
@@ -37,7 +38,7 @@ class DropdownComponent extends Component {
                  <ul className={`dropdown-menu ${this.state.isOpen ? 'open' : ''}`}>
                      <a className="close" onClick={() => this.setState({isOpen: false})}>×</a>
                      {this.props.data.map((starwars, key) => (
-                        <li key={key}><a href="#" onClick={() => this.viewDetails(starwars)}>{starwars.title} ({moment(starwars.release_date).format("YYYY")})</a></li>
+                        <li key={key}><a href="#" onClick={() => this.viewDetails(starwars)}>{starwars.title} ({_getYear(starwars.release_date)})</a></li>
                      ))}
                 </ul>
             </div>
