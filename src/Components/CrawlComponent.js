@@ -1,26 +1,17 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 
-class CrawlComponent extends Component {
-    constructor(props) {
-        super(props);
-        
-        this.state = {
-            
-        }
-    }
-    componentDidMount = () => {
-        console.log('movie details ', this.props.movieDetails);
-    }
+const CrawlComponent = props => {
+    useEffect(() => {
+        console.log('movie details ', props.movieDetails);
+    })
     
-    render() {
-        return (
-             <div className="crawl-container">
-                 {this.props.movieDetails &&
-                    <marquee>{this.props.movieDetails.opening_crawl}</marquee>
-                 }
-            </div>
-        );
-    }
+    return (
+            <div className="crawl-container">
+                {props.movieDetails &&
+                <marquee>{props.movieDetails.opening_crawl}</marquee>
+                }
+        </div>
+    );
 }
 
 export default CrawlComponent;

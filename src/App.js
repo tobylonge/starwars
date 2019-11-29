@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import localForage from "localforage";
 import Loader from "./Utils/Loader";
@@ -6,79 +6,90 @@ import Dropdown from "./Components/DropdownComponent";
 import TableComponent from "./Components/TableComponent";
 import CrawlComponent from "./Components/CrawlComponent";
 
-class StarWarsBackGround extends Component {
-  constructor(props) {
-    super(props);
+const StarWarsBackGround = () => {
 
-    this.state = {
-      starwars: [],
-      isloading: false,
-      isDetails: false,
-      movieDetails: [],
-      isErrorMsg: false
-    };
-  }
+    const [starwars, setStarwars] = useState([]);
+    const [isloading, setIsloading] = useState(false);
+    const [isDetails, setIsDetails] = useState(false);
+    const [movieDetails, setMovieDetails] = useState([]);
+    const [isErrorMsg, setIsErrorMsg] = useState(false);
+
+
+  useEffect(() => {
+    setIsloading(true);
+      //check if data already exist it localstorage
+      localForage.getItem("starwarsfilms", (err, value) => {
+        if (value) {
+          setStarwars(value);
+          setIsloading(false);
+        } else {
+          //fetch from API
+          loadData();
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log('starwars ', starwars);
+    localForage.setItem("starwarsfilms", starwars).catch(err => {
+      console.log(err);
+    });
+  }, [starwars])
 
   //get starwars data
-  loadData = () => {
+  const loadData = () => {
+    console.log('load data ');
     axios
       .get(`https://swapi.co/api/films`)
       .then(response => {
         console.log("response ", response);
         if (response.data.results) {
-          this.setState({ starwars: response.data.results }, () => {
-            //Save to local storage so it loads faster on future loads
-            localForage.setItem("starwarsfilms", this.state.starwars).catch(err => {
-              console.log(err);
-            });
-            this.setState({ isloading: false, isErrorMsg: false });
-          });
+
+          setStarwars(response.data.results);
+          //Save to local storage so it loads faster on future loads
+            setIsloading(false);
+            setIsErrorMsg(false);
+          // this.setState({ starwars: response.data.results }, () => {
+          //   //Save to local storage so it loads faster on future loads
+          //   localForage.setItem("starwarsfilms", this.state.starwars).catch(err => {
+          //     console.log(err);
+          //   });
+          //   this.setState({ isloading: false, isErrorMsg: false });
+          // });
         }
       })
       .catch(error => {
         console.log(error);
-        this.setState({ isloading: false, isErrorMsg: true });
+        setIsloading(false);
+        setIsErrorMsg(true);
       });
   };
 
-  viewDetails = movie => {
+
+
+  const viewDetails = movie => {
     //close dropdown Modal
-    this.setState({ isDetails: true, movieDetails: movie });
+    setIsDetails(true);
+    setMovieDetails(movie);
     console.log("movie ", movie);
   };
 
-  componentDidMount = () => {
-    this.setState({ isloading: true }, () => {
-      //check if data already exist it localstorage
-      localForage.getItem("starwarsfilms", (err, value) => {
-        if (value) {
-          this.setState({ starwars: value }, () => {
-            this.setState({ isloading: false });
-          });
-        } else {
-          //fetch from API
-          this.loadData();
-        }
-      });
-    });
-  };
-
-  render() {
+  
     return (
       <div className="app">
         <div className="app-wrapper">
-          {this.state.isloading ? (
+          {isloading ? (
             <Loader />
           ) : (
-            !this.state.isErrorMsg ?
+            !isErrorMsg ?
             <div className="container">
-              <Dropdown data={this.state.starwars} viewDetails={movie => this.viewDetails(movie)} />
-              {!this.state.isDetails ? (
+              <Dropdown data={starwars} viewDetails={movie => viewDetails(movie)} />
+              {!isDetails ? (
                 <img src="logo.svg" className="app-logo" alt="logo" />
               ) : (
                 <React.Fragment>
-                  <CrawlComponent movieDetails={this.state.movieDetails} />
-                  <TableComponent movieDetails={this.state.movieDetails}></TableComponent>
+                  <CrawlComponent movieDetails={movieDetails} />
+                  <TableComponent movieDetails={movieDetails} />
                 </React.Fragment>
               )}
             </div>
@@ -90,7 +101,6 @@ class StarWarsBackGround extends Component {
         </div>
       </div>
     );
-  }
 }
 
 export default StarWarsBackGround;
