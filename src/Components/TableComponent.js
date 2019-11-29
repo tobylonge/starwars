@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import Loader from "../Utils/Loader";
+import {_sumEle, _sortDescLetters, _sortDescNumbers, _sortAscNumbers, _sortAscLetters, _getYear} from '../Utils/helpers';
+import localForage from "localforage";
 
 class tableComponent extends Component {
   constructor(props) {
@@ -18,12 +20,14 @@ class tableComponent extends Component {
       heightSum: 0,
       isloading: true,
       errorMsg: false,
-      genders: []
+      genders: [],
+      people: []
     };
   }
 
   getCharacters = async () => {
     let list = [];
+    let people = [...this.state.people]; 
 
     await this.state.movieDetails.characters.forEach((character) => {
         list.push(axios.get(character));
@@ -32,12 +36,24 @@ class tableComponent extends Component {
 
     axios.all(list)
     .then(axios.spread((...responses) => {
-        this.setState({ characters: responses, backupCharacters: responses}, () => {
+        const characters = responses.map(charc => charc.data);
+        this.setState({ characters: characters, backupCharacters: characters}, () => {
+          //Saving data to localforage
+          people.push({characters: this.state.characters, year: _getYear(this.state.movieDetails.release_date)});
+          this.setState({people}, () => {
+            localForage.setItem("starwarspeople", this.state.people).catch(err => {
+              console.log(err);
+            });
+          })
+          
+          console.log('people ', people);
+
           this.sortCharacters('nameUp', 'name');
           this.getGenders(this.state.characters);
           this.setState({isloading: false});
-            this.sumofHeight();
+          this.sumofHeight();
         });
+
     })).catch(error => {
         console.log('Get Characters api error ', error);
         this.setState({errorMsg: true});
@@ -47,8 +63,8 @@ class tableComponent extends Component {
   getGenders = (characters) => {
     let genders = [];
     characters.forEach(character => {
-      if(genders.indexOf(character.data.gender) === -1) {
-        genders.push(character.data.gender);
+      if(genders.indexOf(character.gender) === -1) {
+        genders.push(character.gender);
       }
     });
 
@@ -57,10 +73,10 @@ class tableComponent extends Component {
 
   sortAscending = (data, term, element) => {
     if(element === 'height') {
-      data.sort((a,b) => (a.data[element] - b.data[element]));
+      _sortAscNumbers(data, element);
     }
     else {
-      data.sort((a,b) => (a.data[element] > b.data[element]) ? 1 : ((b.data[element] > a.data[element]) ? -1 : 0));
+      _sortAscLetters(data, element);
     }
 
     this.setState({[term]: !this.state[term]});
@@ -68,15 +84,16 @@ class tableComponent extends Component {
 
   sortDecending = (data, term, element) => {
     if(element === 'height') {
-      data.sort((a,b) => (b.data[element] - a.data[element]));
+      _sortDescNumbers(data, element);
     }
     else {
-      data.sort((a,b) => (a.data[element] > b.data[element]) ? -1 : ((b.data[element] > a.data[element]) ? 1 : 0));
+      _sortDescLetters(data, element);
     }
     this.setState({[term]: !this.state[term]});
   }
 
   sortCharacters = (term, element) => {
+    console.log('sort characters data ', this.state.characters)
     if(this.state[term]) {
         this.sortAscending(this.state.characters, term, element);
     }
@@ -99,7 +116,7 @@ class tableComponent extends Component {
         })
       }
       else {
-        const filteredCharacters = characters.filter(character => character.data.gender.toUpperCase() === value.toUpperCase());
+        const filteredCharacters = characters.filter(character => character.gender.toUpperCase() === value.toUpperCase());
         this.setState({characters: filteredCharacters}, () => {
           this.sumofHeight();
         })
@@ -110,20 +127,49 @@ class tableComponent extends Component {
   //Function to add the sum of heights of characters
   sumofHeight = () => {
     let characters = [...this.state.characters]
-    const heightSum = characters.reduce((acc, char) => {
-      if(!isNaN(char.data.height)) {
-        acc += Number(char.data.height);
-      }
-      return acc;
-    }, 0);
+    const heightSum = _sumEle(characters)
     this.setState({heightSum}, () => {
       this.setState({isloading: false});
     })
   }
 
+  //Check LocalStorage for Data
+  checkStorage = () => {
+    localForage.getItem("starwarspeople", (err, value) => {
+      if (value) {
+        this.setState({people: value}, () => {
+          let people = [...this.state.people];
+          if(people && people.length > 0) {
+            const details = people.filter(p => p.year === _getYear(this.state.movieDetails.release_date));
+            console.log('details ', details);
+            if(details && details.length > 0) {
+              this.setState({characters: details[0].characters}, () => {
+                this.sortCharacters('nameUp', 'name');
+                this.getGenders(this.state.characters);
+                this.setState({isloading: false});
+                this.sumofHeight();
+              });
+
+            }
+            else {
+              this.getCharacters();
+            }
+          }
+          else {
+            this.getCharacters();
+          }
+        })
+      }
+      else {
+        this.getCharacters();
+      }
+    });
+  }
+
   componentDidMount = () => {
+    console.log('In the component');
     this.setState({ movieDetails: this.props.movieDetails }, () => {
-      this.getCharacters();
+      this.checkStorage();
     });
   };
 
@@ -131,7 +177,7 @@ class tableComponent extends Component {
     if (nextProps.movieDetails !== this.props.movieDetails) {
       this.setState({isloading: true});
       this.setState({movieDetails: nextProps.movieDetails}, () => {
-          this.getCharacters();
+        this.checkStorage();
       });
     }
   };
@@ -172,9 +218,9 @@ class tableComponent extends Component {
               <React.Fragment>
               {this.state.characters.map((character, key) => (
                 <tr key={key}>
-                  <td>{character.data.name} </td>
-                  <td>{window.screen.width > 768 ? character.data.gender : character.data.gender.charAt(0)}</td>
-                  <td>{character.data.height}{isNaN(character.data.height) ? '' : 'cm'}</td>
+                  <td>{character.name} </td>
+                  <td>{window.screen.width > 768 ? character.gender : character.gender.charAt(0)}</td>
+                  <td>{character.height}{isNaN(character.height) ? '' : 'cm'}</td>
                 </tr>
               ))}
               <tr>

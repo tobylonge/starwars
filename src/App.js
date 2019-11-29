@@ -28,7 +28,7 @@ class StarWarsBackGround extends Component {
         if (response.data.results) {
           this.setState({ starwars: response.data.results }, () => {
             //Save to local storage so it loads faster on future loads
-            localForage.setItem("starwars", this.state.starwars).catch(err => {
+            localForage.setItem("starwarsfilms", this.state.starwars).catch(err => {
               console.log(err);
             });
             this.setState({ isloading: false, isErrorMsg: false });
@@ -50,7 +50,7 @@ class StarWarsBackGround extends Component {
   componentDidMount = () => {
     this.setState({ isloading: true }, () => {
       //check if data already exist it localstorage
-      localForage.getItem("starwars", (err, value) => {
+      localForage.getItem("starwarsfilms", (err, value) => {
         if (value) {
           this.setState({ starwars: value }, () => {
             this.setState({ isloading: false });
