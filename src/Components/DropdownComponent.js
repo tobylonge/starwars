@@ -16,7 +16,6 @@ class DropdownComponent extends Component {
 
     viewDetails = movie => {
         //close dropdown Modal
-        console.log('date ', _getYear(movie.release_date));
         this.setState({isOpen: false, defaultText: `${movie.title} (${_getYear(movie.release_date)})`});
         this.props.viewDetails(movie);
     }
@@ -26,8 +25,6 @@ class DropdownComponent extends Component {
         this.props.data.sort(function (left, right) {
             return _getYear(left.release_date) - _getYear(right.release_date)
         });
-
-        // console.log('sort ', sortedData)
     }
     
     render() {
