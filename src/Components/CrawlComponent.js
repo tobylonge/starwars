@@ -1,9 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { } from 'react';
 
 const CrawlComponent = props => {
-    useEffect(() => {
-        console.log('movie details ', props.movieDetails);
-    })
     
     return (
             <div className="crawl-container">

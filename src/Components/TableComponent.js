@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "../Utils/Loader";
 import {_sumEle, _sortDescLetters, _sortDescNumbers, _sortAscNumbers, _sortAscLetters, _getYear} from '../Utils/helpers';
@@ -9,11 +9,9 @@ const TableComponent = props => {
   const [characters, setCharacters] = useState([]);
   const [backupCharacters, setBackupCharacters] = useState([]);
   const [isloading, setIsloading] = useState(true);
-  const [movieDetails, setMovieDetails] = useState([]);
   const [nameUp, setNameUp] = useState(true);
   const [genderUp, setGenderUp] = useState(true);
   const [heightUp, setHeightUp] = useState(true);
-  const [gender, setGender] = useState('');
   const [heightSum, setHeightSum] = useState(0);
   const [errorMsg, setErrorMsg] = useState(false);
   const [genders, setGenders] = useState([]);
@@ -28,57 +26,34 @@ const TableComponent = props => {
   
 
   useEffect(() => {
-    console.log(new Date());
     if(characters && characters.length > 0) {
-      people.push({characters: characters, year: _getYear(movieDetails.release_date)});
+      const details = people.filter(p => p.year === _getYear(props.movieDetails.release_date));
+      if(details && details.length === 0) {
+        people.push({characters: characters, year: _getYear(props.movieDetails.release_date)});
 
-      setPeople(people);
-      localForage.setItem("starwarspeople", people).catch(err => {
-        console.log(err);
-      });
-      
-      console.log('people ', people);
+        setPeople(people);
+        localForage.setItem("starwarspeople", people).catch(err => {
+          console.log(err);
+        });
     }
-
-    sortCharacters('nameUp', 'name');
-    getGenders(characters);
-    setIsloading(false);
-    sumofHeight();
-  }, [characters]);
-
-  // const firstUpdate = useRef(true);
-  // useLayoutEffect(() => {
-  //   if (firstUpdate.current) {
-  //     firstUpdate.current = false;
-  //     return;
-  //   }
-  //   //your function
-  //   console.log(new Date());
-  //   if(characters && characters.length > 0) {
-  //     people.push({characters: characters, year: _getYear(movieDetails.release_date)});
-
-  //     setPeople(people);
-  //     localForage.setItem("starwarspeople", people).catch(err => {
-  //       console.log(err);
-  //     });
       
-  //     console.log('people ', people);
-  //   }
 
-  //   sortCharacters('nameUp', 'name');
-  //   getGenders(characters);
-  //   setIsloading(false);
-  //   sumofHeight();
-  // }, [characters]);
+      sortAscending(characters, 'name');
+      getGenders(characters);
+      setIsloading(false);
+      sumofHeight();
+    
+    }
+  }, [backupCharacters]);
 
-  useEffect(() => {
-    console.log('In the component');
-    setMovieDetails(props.movieDetails);
-  }, []);
 
   useEffect(() => {
     checkStorage();
-  }, [movieDetails]);
+    setIsloading(true);
+  }, [props.movieDetails]);
+
+
+
 
   const getCharacters = async () => {
     let list = [];
@@ -146,22 +121,37 @@ const TableComponent = props => {
   }
 
   const sortCharacters = (element) => {
-    console.log('sort characters data ', characters)
-    if(element) {
-      sortAscending(characters, element);
-    }
-    else {
+    if(element === 'name') {
+      if(nameUp) {
+        sortAscending(characters, element);
+      }
+      else {
         sortDecending(characters, element)
+      }
+    }
+    else if(element === 'gender') {
+      if(genderUp) {
+        sortAscending(characters, element);
+      }
+      else {
+        sortDecending(characters, element)
+      }
+    }
+    else if(element === 'height') {
+      if(heightUp) {
+        sortAscending(characters, element);
+      }
+      else {
+        sortDecending(characters, element)
+      }
     }
   }
 
 
   //handle Gender select change and fi
   const handleGenderChange = (e) => {
-
     setIsloading(true);
     const value = e.target.value;
-    setGender(value);
 
     if(value.toUpperCase() === 'ALL') {
       setCharacters(backupCharacters);
@@ -175,21 +165,16 @@ const TableComponent = props => {
   }
 
 
-  //Check LocalStorage for Data
+  //Check IndexDB for Data
   const checkStorage = () => {
-    console.log('store ');
     localForage.getItem("starwarspeople", (err, value) => {
       if (value) {
-        console.log('value ', value);
-        setPeople(value);
-        if(people && people.length > 0) {
-          const details = people.filter(p => p.year === _getYear(movieDetails.release_date));
+        if(value && value.length > 0) {
+          setPeople(value);
+          const details = value.filter(p => p.year === _getYear(props.movieDetails.release_date));
           if(details && details.length > 0) {
             setCharacters(details[0].characters);
-            // sortCharacters('nameUp', 'name');
-            // getGenders(characters);
-            // setIsloading(false);
-            // sumofHeight();
+            setBackupCharacters(details[0].characters);
           }
           else {
             getCharacters();
@@ -214,10 +199,10 @@ const TableComponent = props => {
       <Loader /> :
       <div className="table-wrapper">
         <div className="select-box">
-          <select className="select" onChange={e => handleGenderChange(e)} value={gender}>
+          <select className="select" onChange={e => handleGenderChange(e)}>
             <option>All</option>
-            {genders && genders.map((gender,key) => (
-              <option value={gender} key={key}>{gender}</option>
+            {genders && genders.map((g,key) => (
+              <option value={g} key={key}>{g}</option>
             ))}
           </select>
         </div>

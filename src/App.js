@@ -30,7 +30,6 @@ const StarWarsBackGround = () => {
   }, []);
 
   useEffect(() => {
-    console.log('starwars ', starwars);
     localForage.setItem("starwarsfilms", starwars).catch(err => {
       console.log(err);
     });
@@ -38,7 +37,6 @@ const StarWarsBackGround = () => {
 
   //get starwars data
   const loadData = () => {
-    console.log('load data ');
     axios
       .get(`https://swapi.co/api/films`)
       .then(response => {
@@ -49,13 +47,6 @@ const StarWarsBackGround = () => {
           //Save to local storage so it loads faster on future loads
             setIsloading(false);
             setIsErrorMsg(false);
-          // this.setState({ starwars: response.data.results }, () => {
-          //   //Save to local storage so it loads faster on future loads
-          //   localForage.setItem("starwarsfilms", this.state.starwars).catch(err => {
-          //     console.log(err);
-          //   });
-          //   this.setState({ isloading: false, isErrorMsg: false });
-          // });
         }
       })
       .catch(error => {
@@ -71,7 +62,6 @@ const StarWarsBackGround = () => {
     //close dropdown Modal
     setIsDetails(true);
     setMovieDetails(movie);
-    console.log("movie ", movie);
   };
 
   
