@@ -15,6 +15,7 @@ const TableComponent = props => {
   const [heightSum, setHeightSum] = useState(0);
   const [errorMsg, setErrorMsg] = useState(false);
   const [genders, setGenders] = useState([]);
+  const [gender, setGender] = useState('');
   const [people, setPeople] = useState([]);
 
   //Function to add the sum of heights of characters
@@ -41,10 +42,13 @@ const TableComponent = props => {
       sortAscending(characters, 'name');
       getGenders(characters);
       setIsloading(false);
-      sumofHeight();
     
     }
   }, [backupCharacters]);
+
+  useEffect(() => {
+    sumofHeight();
+  }, [characters])
 
 
   useEffect(() => {
@@ -71,14 +75,13 @@ const TableComponent = props => {
         setBackupCharacters(characters);
 
     })).catch(error => {
-        console.log('Get Characters api error ', error);
         setIsloading(false);
         setErrorMsg(true);
       });
   };
 
   const getGenders = (characters) => {
-    let genders = [];
+    let genders = ['All'];
     characters.forEach(character => {
       if(genders.indexOf(character.gender) === -1) {
         genders.push(character.gender);
@@ -152,15 +155,16 @@ const TableComponent = props => {
   const handleGenderChange = (e) => {
     setIsloading(true);
     const value = e.target.value;
+    setGender(value);
 
     if(value.toUpperCase() === 'ALL') {
       setCharacters(backupCharacters);
-      sumofHeight();
+      // sumofHeight();
     }
     else {
       const filteredCharacters = backupCharacters.filter(character => character.gender.toUpperCase() === value.toUpperCase());
       setCharacters(filteredCharacters);
-      sumofHeight();
+      // sumofHeight();
     }
   }
 
@@ -199,8 +203,7 @@ const TableComponent = props => {
       <Loader /> :
       <div className="table-wrapper">
         <div className="select-box">
-          <select className="select" onChange={e => handleGenderChange(e)}>
-            <option>All</option>
+          <select className="select" onChange={e => handleGenderChange(e)} value={gender}>
             {genders && genders.map((g,key) => (
               <option value={g} key={key}>{g}</option>
             ))}
