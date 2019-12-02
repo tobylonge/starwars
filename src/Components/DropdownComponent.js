@@ -1,46 +1,40 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import {_getYear} from '../Utils/helpers';
 
-class DropdownComponent extends Component {
-    constructor(props) {
-        super(props);
-        
-        this.state = {
-            defaultText : 'Choose Starwars movie'
-        }
+const DropdownComponent = props => {
+
+    const [defaultText, setDefaultText] = useState('Choose Starwars movie');
+    const [isOpen, setIsOpen] = useState(false);
+
+    const openDropdown = () => {
+        setIsOpen(true);
     }
 
-    openDropdown = () => {
-        this.setState({isOpen: true});
-    }
-
-    viewDetails = movie => {
+    const viewDetails = movie => {
         //close dropdown Modal
-        this.setState({isOpen: false, defaultText: `${movie.title} (${_getYear(movie.release_date)})`});
-        this.props.viewDetails(movie);
+        setIsOpen(false);
+        setDefaultText(`${movie.title} (${_getYear(movie.release_date)})`)
+        props.viewDetails(movie);
     }
 
-    componentDidMount = () => {
-
-        this.props.data.sort(function (left, right) {
+    useEffect(() => {
+        props.data.sort(function (left, right) {
             return _getYear(left.release_date) - _getYear(right.release_date)
         });
-    }
+    },[])
     
-    render() {
-        return (
-             <div className="dropdown">
-                 <a className="dropdownButton" onClick={this.openDropdown}>{this.state.defaultText}</a>
-                 <i className="icon"></i>
-                 <ul className={`dropdown-menu ${this.state.isOpen ? 'open' : ''}`}>
-                     <a className="close" onClick={() => this.setState({isOpen: false})}>×</a>
-                     {this.props.data.map((starwars, key) => (
-                        <li key={key}><a href="#" onClick={() => this.viewDetails(starwars)}>{starwars.title} ({_getYear(starwars.release_date)})</a></li>
-                     ))}
-                </ul>
-            </div>
-        );
-    }
+    return (
+            <div className="dropdown">
+                <a className="dropdownButton" onClick={() => openDropdown()}>{defaultText}</a>
+                <i className="icon"></i>
+                <ul className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
+                    <a className="close" onClick={() => setIsOpen(false)}>×</a>
+                    {props.data.map((starwars, key) => (
+                    <li key={key}><a href="#" onClick={() => viewDetails(starwars)}>{starwars.title} ({_getYear(starwars.release_date)})</a></li>
+                    ))}
+            </ul>
+        </div>
+    );
 }
 
 export default DropdownComponent;

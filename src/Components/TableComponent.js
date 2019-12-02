@@ -15,7 +15,9 @@ const TableComponent = props => {
   const [heightSum, setHeightSum] = useState(0);
   const [errorMsg, setErrorMsg] = useState(false);
   const [genders, setGenders] = useState([]);
+  const [gender, setGender] = useState('');
   const [people, setPeople] = useState([]);
+  const [active, setActive] = useState(0);
 
   //Function to add the sum of heights of characters
   const sumofHeight = () => {
@@ -41,10 +43,13 @@ const TableComponent = props => {
       sortAscending(characters, 'name');
       getGenders(characters);
       setIsloading(false);
-      sumofHeight();
     
     }
   }, [backupCharacters]);
+
+  useEffect(() => {
+    sumofHeight();
+  }, [characters])
 
 
   useEffect(() => {
@@ -71,14 +76,13 @@ const TableComponent = props => {
         setBackupCharacters(characters);
 
     })).catch(error => {
-        console.log('Get Characters api error ', error);
         setIsloading(false);
         setErrorMsg(true);
       });
   };
 
   const getGenders = (characters) => {
-    let genders = [];
+    let genders = ['All'];
     characters.forEach(character => {
       if(genders.indexOf(character.gender) === -1) {
         genders.push(character.gender);
@@ -122,6 +126,7 @@ const TableComponent = props => {
 
   const sortCharacters = (element) => {
     if(element === 'name') {
+      setActive(1)
       if(nameUp) {
         sortAscending(characters, element);
       }
@@ -130,6 +135,7 @@ const TableComponent = props => {
       }
     }
     else if(element === 'gender') {
+      setActive(2)
       if(genderUp) {
         sortAscending(characters, element);
       }
@@ -138,6 +144,7 @@ const TableComponent = props => {
       }
     }
     else if(element === 'height') {
+      setActive(3)
       if(heightUp) {
         sortAscending(characters, element);
       }
@@ -152,15 +159,16 @@ const TableComponent = props => {
   const handleGenderChange = (e) => {
     setIsloading(true);
     const value = e.target.value;
+    setGender(value);
 
     if(value.toUpperCase() === 'ALL') {
       setCharacters(backupCharacters);
-      sumofHeight();
+      // sumofHeight();
     }
     else {
       const filteredCharacters = backupCharacters.filter(character => character.gender.toUpperCase() === value.toUpperCase());
       setCharacters(filteredCharacters);
-      sumofHeight();
+      // sumofHeight();
     }
   }
 
@@ -199,8 +207,7 @@ const TableComponent = props => {
       <Loader /> :
       <div className="table-wrapper">
         <div className="select-box">
-          <select className="select" onChange={e => handleGenderChange(e)}>
-            <option>All</option>
+          <select className="select" onChange={e => handleGenderChange(e)} value={gender}>
             {genders && genders.map((g,key) => (
               <option value={g} key={key}>{g}</option>
             ))}
@@ -210,13 +217,13 @@ const TableComponent = props => {
         <thead>
           <tr>
             <th onClick={() => sortCharacters('name')}>
-              <h1>Name <i className={`icon ${nameUp ? 'up' : 'down'}`}></i></h1>
+              <h1 className={active === 1 ? `active ${nameUp ? 'up' : 'down'}` : ''}>Name</h1>
             </th>
             <th onClick={() => sortCharacters('gender')}>
-              <h1>Gender  <i className={`icon ${genderUp ? 'up' : 'down'}`}></i></h1>
+              <h1 className={active === 2 ? `active ${genderUp ? 'up' : 'down'}` : ''}>Gender</h1>
             </th>
             <th onClick={() => sortCharacters('height')}>
-              <h1>Height <i className={`icon ${heightUp ? 'up' : 'down'}`}></i></h1>
+              <h1 className={active === 3 ? `active ${heightUp ? 'up' : 'down'}` : ''}>Height</h1>
             </th>
           </tr>
         </thead>
