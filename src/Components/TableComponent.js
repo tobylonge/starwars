@@ -17,6 +17,7 @@ const TableComponent = props => {
   const [genders, setGenders] = useState([]);
   const [gender, setGender] = useState('');
   const [people, setPeople] = useState([]);
+  const [active, setActive] = useState(0);
 
   //Function to add the sum of heights of characters
   const sumofHeight = () => {
@@ -125,6 +126,7 @@ const TableComponent = props => {
 
   const sortCharacters = (element) => {
     if(element === 'name') {
+      setActive(1)
       if(nameUp) {
         sortAscending(characters, element);
       }
@@ -133,6 +135,7 @@ const TableComponent = props => {
       }
     }
     else if(element === 'gender') {
+      setActive(2)
       if(genderUp) {
         sortAscending(characters, element);
       }
@@ -141,6 +144,7 @@ const TableComponent = props => {
       }
     }
     else if(element === 'height') {
+      setActive(3)
       if(heightUp) {
         sortAscending(characters, element);
       }
@@ -213,13 +217,13 @@ const TableComponent = props => {
         <thead>
           <tr>
             <th onClick={() => sortCharacters('name')}>
-              <h1>Name <i className={`icon ${nameUp ? 'up' : 'down'}`}></i></h1>
+              <h1 className={active === 1 ? `active ${nameUp ? 'up' : 'down'}` : ''}>Name</h1>
             </th>
             <th onClick={() => sortCharacters('gender')}>
-              <h1>Gender  <i className={`icon ${genderUp ? 'up' : 'down'}`}></i></h1>
+              <h1 className={active === 2 ? `active ${genderUp ? 'up' : 'down'}` : ''}>Gender</h1>
             </th>
             <th onClick={() => sortCharacters('height')}>
-              <h1>Height <i className={`icon ${heightUp ? 'up' : 'down'}`}></i></h1>
+              <h1 className={active === 3 ? `active ${heightUp ? 'up' : 'down'}` : ''}>Height</h1>
             </th>
           </tr>
         </thead>
