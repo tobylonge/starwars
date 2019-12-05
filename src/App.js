@@ -9,7 +9,7 @@ import CrawlComponent from "./Components/CrawlComponent";
 const StarWarsBackGround = () => {
 
     const [starwars, setStarwars] = useState([]);
-    const [isloading, setIsloading] = useState(false);
+    const [isloading, setIsloading] = useState(true);
     const [isDetails, setIsDetails] = useState(false);
     const [movieDetails, setMovieDetails] = useState([]);
     const [isErrorMsg, setIsErrorMsg] = useState(false);
@@ -40,7 +40,6 @@ const StarWarsBackGround = () => {
     axios
       .get(`https://swapi.co/api/films`)
       .then(response => {
-        console.log("response ", response);
         if (response.data.results) {
 
           setStarwars(response.data.results);
@@ -50,7 +49,6 @@ const StarWarsBackGround = () => {
         }
       })
       .catch(error => {
-        console.log(error);
         setIsloading(false);
         setIsErrorMsg(true);
       });

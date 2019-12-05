@@ -98,11 +98,6 @@ marquee {
     td:first-child {
         color: #ffe300;
     }
-
-    tr:hover {
-        background-color: #464A52;
-        box-shadow: 0 3px 3px -3px #0E1119;
-    }
     
     th {
         background-color: #111317;
@@ -112,20 +107,7 @@ marquee {
         padding-bottom: calc(2% - 10px);
         
     }
-    
-    td:hover {
-        background-color: #ffe300;
-        color: #403E10;
-        font-weight: bold;
-    
-        box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
-        transform: translate3d(3px, -3px, 0);
-    
-        transition-delay: 0s;
-        transition-duration: 0.4s;
-        transition-property: all;
-        transition-timing-function: line;
-    }
+
 }
 
 .select-box {

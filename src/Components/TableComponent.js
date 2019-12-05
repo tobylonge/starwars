@@ -34,9 +34,7 @@ const TableComponent = props => {
         people.push({characters: characters, year: _getYear(props.movieDetails.release_date)});
 
         setPeople(people);
-        localForage.setItem("starwarspeople", people).catch(err => {
-          console.log(err);
-        });
+        localForage.setItem("starwarspeople", people);
     }
       
 
