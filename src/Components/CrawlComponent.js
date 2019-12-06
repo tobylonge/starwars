@@ -8,11 +8,11 @@ const CrawlComponent = props => {
 
 
     useEffect(() => {
-        if(props.movieDetails) {
+        if(props.filmDetails) {
             setIsCrawl(false);
-            setCrawlMsg(props.movieDetails.opening_crawl)
+            setCrawlMsg(props.filmDetails.opening_crawl)
         }      
-    },[props.movieDetails]);
+    },[props.filmDetails]);
 
     useEffect(() => {
         setIsCrawl(true)

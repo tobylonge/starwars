@@ -11,18 +11,34 @@ export const _sumEle = (data) => {
     }, 0);
 }
 
-export const _sortDescNumbers = (data, element) => {
-    return data.sort((a,b) => (b[element] - a[element]));
+export const _sortArrayLetters = (data, element, order="asc") => {
+    let newArray; 
+    
+    if(order === 'asc') {
+        newArray = [...data].sort((a,b) => (a[element] > b[element]) ? 1 : ((b[element] > a[element]) ? -1 : 0));
+    }
+    else {
+        newArray = [...data].sort((a,b) => (a[element] > b[element]) ? -1 : ((b[element] > a[element]) ? 1 : 0));
+    }
+
+    return newArray
 }
 
-export const _sortDescLetters = (data, element) => {
-    return data.sort((a,b) => (a[element] > b[element]) ? -1 : ((b[element] > a[element]) ? 1 : 0));
-}
+export const _sortArrayNumbers = (data, element, order="asc") => {
+    let newArray; 
+    
+    if(order === 'asc') {
+        newArray = [...data].sort((a,b) => (a[element] - b[element]));
+    }
+    else {
+        newArray = [...data].sort((a,b) => (b[element] - a[element]));
+    }
 
-export const _sortAscNumbers = (data, element) => {
-    return data.sort((a,b) => (a[element] - b[element]));
+    return newArray
 }
-
-export const _sortAscLetters = (data, element) => {
-    return data.sort((a,b) => (a[element] > b[element]) ? 1 : ((b[element] > a[element]) ? -1 : 0));
+export const _convertFeetInch = (value) => {
+    const inches = value / 2.54;
+    const ft = Math.floor(inches / 12);
+    const _in = (inches % 12).toFixed(2);
+    return `${ft}ft ${_in} in`
 }
